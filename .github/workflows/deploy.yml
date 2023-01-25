@@ -7,12 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: 'auth'
+      name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        workload_identity_provider: 'projects/73795867047/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        service_account: 'github-actions@frontend-375818.iam.gserviceaccount.com'
 
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
 
     - name: 'Use gcloud CLI'
-      run: 'gcloud info'
+      run: 'gcloud app deploy'
