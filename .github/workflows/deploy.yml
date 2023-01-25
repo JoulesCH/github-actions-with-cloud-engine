@@ -9,6 +9,7 @@ jobs:
       contents: 'read'
       id-token: 'write'
     steps:
+    - uses: 'actions/checkout@v3'
     - id: 'auth'
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
@@ -19,6 +20,5 @@ jobs:
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
 
-    - uses: 'actions/checkout@v3'
     - name: 'Use gcloud CLI'
-      run: 'gcloud app deploy --project frontend-375818'
+      run: 'gcloud app deploy --project frontend-375818 '
