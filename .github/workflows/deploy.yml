@@ -1,24 +1,34 @@
-name: Deploy on GCP
+name: Deploy to GAE
+
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   deploy:
+    name: Deploying to Google Cloud
     runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+    
     steps:
-    - uses: 'actions/checkout@v3'
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v1'
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Deploy to App Engine
+      id: deploy
+      uses: google-github-actions/deploy-appengine@v0.2.0
       with:
-        workload_identity_provider: 'projects/73795867047/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-        service_account: 'github-actions@frontend-375818.iam.gserviceaccount.com'
+        deliverables: app.yaml
+        version: v1
+        project_id: ${{ secrets.GCP_PROJECT }}
+        credentials: ${{ secrets.GCP_CREDENTIALS }}
 
-    - name: 'Set up Cloud SDK'
-      uses: 'google-github-actions/setup-gcloud@v1'
-
-    - name: 'Use gcloud CLI'
-      run: 'gcloud app deploy --project frontend-375818 '
+    - name: Test
+      run: curl "${{ steps.deploy.outputs.url }}"
